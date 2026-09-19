@@ -1,0 +1,4 @@
+azure-eventhub==5.15.0
+requests==2.32.4
+
+websocket-client==1.9.2

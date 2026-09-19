@@ -1,0 +1,40 @@
+// Live vibration trend
+MachineTelemetry
+| where timestamp > ago(5m)
+| summarize avgVib = avg(vibrationMm) by machineId, bin(timestamp, 10s)
+| render timechart
+
+// Active anomalies
+// Peer-deviation detector: a machine is anomalous when its 10s average vibration
+// exceeds the absolute damage threshold AND stands far off the fleet median for the
+// same bucket. Comparing against peers keeps detection valid on short/bursty windows,
+// where a per-series baseline fit has too few points to be meaningful.
+let win = 20m;
+let step = 10s;
+let minVib = 8.0;
+let minScore = 3.0;
+let binned = MachineTelemetry
+    | where timestamp > ago(win)
+    | summarize vib = avg(vibrationMm), maxTemp = max(temperatureC), faults = countif(status == 'fault')
+        by machineId, plant, line, ts = bin(timestamp, step);
+let fleet = binned
+    | summarize fleetMedian = percentile(vib, 50), fleetStd = stdev(vib) by ts;
+binned
+| join kind=inner fleet on ts
+| extend score = iff(fleetStd > 0.0, (vib - fleetMedian) / fleetStd, 0.0)
+| where vib > minVib and score > minScore
+| project timestamp = ts, machineId, vib = round(vib, 2), fleetMedian = round(fleetMedian, 2), score = round(score, 2), maxTemp, faults
+| order by timestamp desc
+
+// Live throughput
+MachineTelemetry
+| where timestamp > ago(5m)
+| summarize throughputUnits = sum(throughputUnits) by line
+
+// Fault machine count
+MachineTelemetry
+| where timestamp > ago(2m)
+| summarize arg_max(timestamp, status) by machineId
+| where status == "fault"
+| count
+

@@ -1,0 +1,23 @@
+{
+  "actionName": "SendMaintenanceEmail",
+  "description": "Power Automate action invoked by OA_FactoryOperations after approval.",
+  "trigger": {
+    "type": "Operations Agent custom action",
+    "connectionString": "<PASTE_CONNECTION_STRING_FROM_OPERATIONS_AGENT>",
+    "parameters": [
+      "machineId",
+      "line",
+      "plant",
+      "vibrationMm",
+      "timestamp"
+    ]
+  },
+  "action": {
+    "connector": "Office 365 Outlook",
+    "operation": "Send an email (V2)",
+    "to": "maintenance-team@example.com",
+    "subject": "Predictive maintenance required - @{triggerBody()?['machineId']}",
+    "body": "High vibration @{triggerBody()?['vibrationMm']} mm detected on @{triggerBody()?['machineId']} / @{triggerBody()?['line']} / @{triggerBody()?['plant']} at @{triggerBody()?['timestamp']}. Please inspect the machine.",
+    "importance": "High"
+  }
+}

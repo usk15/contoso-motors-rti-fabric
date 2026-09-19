@@ -1,0 +1,24 @@
+.create-merge table MachineTelemetry (
+    machineId: string,
+    line: string,
+    plant: string,
+    timestamp: datetime,
+    temperatureC: real,
+    vibrationMm: real,
+    rpm: int,
+    throughputUnits: int,
+    status: string
+)
+
+.create-or-alter table MachineTelemetry ingestion json mapping 'MachineTelemetryMapping' "[{\"column\":\"machineId\",\"Properties\":{\"path\":\"$.machineId\"}},{\"column\":\"line\",\"Properties\":{\"path\":\"$.line\"}},{\"column\":\"plant\",\"Properties\":{\"path\":\"$.plant\"}},{\"column\":\"timestamp\",\"Properties\":{\"path\":\"$.timestamp\"}},{\"column\":\"temperatureC\",\"Properties\":{\"path\":\"$.temperatureC\"}},{\"column\":\"vibrationMm\",\"Properties\":{\"path\":\"$.vibrationMm\"}},{\"column\":\"rpm\",\"Properties\":{\"path\":\"$.rpm\"}},{\"column\":\"throughputUnits\",\"Properties\":{\"path\":\"$.throughputUnits\"}},{\"column\":\"status\",\"Properties\":{\"path\":\"$.status\"}}]"
+
+.create-merge table MaintenanceRequests (
+    requestedAt: datetime,
+    machineId: string,
+    line: string,
+    plant: string,
+    vibrationMm: real,
+    eventTimestamp: datetime,
+    requestedBy: string,
+    notes: string
+)

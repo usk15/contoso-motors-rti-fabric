@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Deployment output - environment-specific artifact IDs, not source.
+deployment-state*.json
+
+# Personal/environment-specific credential loaders. Copy .env.example instead.
+env-*.ps1
+.env
+
+# Editor/OS noise
+.vscode/
+.DS_Store
